@@ -9,6 +9,8 @@ namespace Accountant.MVC.Models
     {
         public int Id { get; set; }
         public List<Balance> Balances { get; set; } = new List<Balance>();
-        public double AnualBalanceResult {get; set;}
+        public int Year { get; set; }
+        public double? AnualBalanceResult {get; set;}
+        public bool Positive { get; set; }
     }
 }

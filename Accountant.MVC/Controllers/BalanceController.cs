@@ -7,34 +7,37 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Accountant.MVC.Context;
 using Accountant.MVC.Models;
+using Accountant.MVC.Dtos;
+using Accountant.MVC.Interfaces;
 
 namespace Accountant.MVC.Controllers
 {
     public class BalanceController : Controller
     {
-        private readonly AccountantContext _context;
+        private readonly IBalanceRepository _repository;
 
-        public BalanceController(AccountantContext context)
+        public BalanceController(IBalanceRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         // GET: Balance
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int anualBalanceId)
         {
-            return View(await _context.Balances.ToListAsync());
+            return View(await _repository.GetBalancesFromYear(anualBalanceId));
         }
 
         // GET: Balance/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+
             if (id == null)
             {
                 return NotFound();
             }
 
-            var balance = await _context.Balances
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var balance = await _repository.Get((int)id);
+
             if (balance == null)
             {
                 return NotFound();
@@ -44,9 +47,21 @@ namespace Accountant.MVC.Controllers
         }
 
         // GET: Balance/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View();
+            try
+            {
+                BalanceDto balanceDto = new BalanceDto();
+
+                balanceDto.Years = await _repository.GetAnualBalances();
+
+                return View(balanceDto);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            
         }
 
         // POST: Balance/Create
@@ -54,15 +69,26 @@ namespace Accountant.MVC.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,AnualBalanceId,Month,BalanceResult")] Balance balance)
+        public async Task<IActionResult> Create([Bind("Id,AnualBalanceId,Month,BalanceResult")] BalanceDto balanceDto)
         {
             if (ModelState.IsValid)
-            {
-                _context.Add(balance);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+            {                         
+                try
+                {
+                    Balance newBalance = await _repository.Add(balanceDto.Month);
+
+                    if (newBalance == null)
+                        throw new Exception();
+
+                    return RedirectToAction(nameof(Details), "Balance", new { id = newBalance.Id }, null);                
+                }
+                catch (Exception)
+                {
+                    throw new Exception("Couldnt create Balance");
+                }
+                
             }
-            return View(balance);
+            return View(balanceDto);
         }
 
         // GET: Balance/Edit/5
@@ -73,7 +99,8 @@ namespace Accountant.MVC.Controllers
                 return NotFound();
             }
 
-            var balance = await _context.Balances.FindAsync(id);
+            var balance = await _repository.Get((int)id);
+
             if (balance == null)
             {
                 return NotFound();
@@ -97,12 +124,14 @@ namespace Accountant.MVC.Controllers
             {
                 try
                 {
-                    _context.Update(balance);
-                    await _context.SaveChangesAsync();
+                    var response = await _repository.Update(balance);
+
+                    if (response == null)
+                        throw new Exception("Couldn't update balance");
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!BalanceExists(balance.Id))
+                    if (!_repository.BalanceExists(balance.Id))
                     {
                         return NotFound();
                     }
@@ -124,8 +153,8 @@ namespace Accountant.MVC.Controllers
                 return NotFound();
             }
 
-            var balance = await _context.Balances
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var balance = await _repository.Get((int)id);
+
             if (balance == null)
             {
                 return NotFound();
@@ -139,15 +168,11 @@ namespace Accountant.MVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var balance = await _context.Balances.FindAsync(id);
-            _context.Balances.Remove(balance);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            if (await _repository.Delete(id) != null)
+                return RedirectToAction(nameof(Index));
+            else
+                return BadRequest();
         }
 
-        private bool BalanceExists(int id)
-        {
-            return _context.Balances.Any(e => e.Id == id);
-        }
     }
 }

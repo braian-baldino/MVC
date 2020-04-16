@@ -7,22 +7,24 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Accountant.MVC.Context;
 using Accountant.MVC.Models;
+using Accountant.MVC.Dtos;
+using Accountant.MVC.Interfaces;
 
 namespace Accountant.MVC.Controllers
 {
     public class IncomeController : Controller
     {
-        private readonly AccountantContext _context;
+        private readonly IIncomeRepository _repository;
 
-        public IncomeController(AccountantContext context)
+        public IncomeController(IIncomeRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         // GET: Income
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Incomes.ToListAsync());
+            return View(await _repository.GetAll());
         }
 
         // GET: Income/Details/5
@@ -33,8 +35,8 @@ namespace Accountant.MVC.Controllers
                 return NotFound();
             }
 
-            var income = await _context.Incomes
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var income = await _repository.Get((int)id);
+
             if (income == null)
             {
                 return NotFound();
@@ -44,9 +46,33 @@ namespace Accountant.MVC.Controllers
         }
 
         // GET: Income/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create(int? id)
         {
-            return View();
+            try
+            {
+                if (id == null)
+                {
+                    IncomeDto incomeDto = new IncomeDto();
+                    incomeDto.AnualBalances = await _repository.GetAnualBalances();
+                    incomeDto.Categories = await _repository.GetIncomeTypes();
+                    return View("Create", incomeDto);
+                }
+                else
+                {
+                    IncomeDto incomeDto = new IncomeDto();
+                    incomeDto.Balance = await _repository.GetBalance((int)id);
+                    incomeDto.Categories = await _repository.GetIncomeTypes();
+                    return View("CreateFromBalance", incomeDto);
+                }
+
+                throw new Exception();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
         }
 
         // POST: Income/Create
@@ -54,15 +80,17 @@ namespace Accountant.MVC.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,BalanceId,Category,Description,Amount,Date")] Income income)
+        public async Task<IActionResult> Create(IncomeDto incomeDto)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(income);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                Income income = new Income();
+                income = incomeDto.Income;
+
+                if (await _repository.Add(income) != null)
+                    return RedirectToAction(nameof(Details), "Balance", new { id = incomeDto.Income.BalanceId }, null);
             }
-            return View(income);
+            return View(incomeDto);
         }
 
         // GET: Income/Edit/5
@@ -73,7 +101,8 @@ namespace Accountant.MVC.Controllers
                 return NotFound();
             }
 
-            var income = await _context.Incomes.FindAsync(id);
+            var income = await _repository.Get((int)id);
+
             if (income == null)
             {
                 return NotFound();
@@ -97,12 +126,12 @@ namespace Accountant.MVC.Controllers
             {
                 try
                 {
-                    _context.Update(income);
-                    await _context.SaveChangesAsync();
+                    if (await _repository.Update(income) != null)
+                        return RedirectToAction(nameof(Details), "Balance", new { id = income.BalanceId }, null);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!IncomeExists(income.Id))
+                    if (!_repository.IncomeExists(income.Id))
                     {
                         return NotFound();
                     }
@@ -124,8 +153,8 @@ namespace Accountant.MVC.Controllers
                 return NotFound();
             }
 
-            var income = await _context.Incomes
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var income = await _repository.Get((int)id);
+
             if (income == null)
             {
                 return NotFound();
@@ -139,15 +168,10 @@ namespace Accountant.MVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var income = await _context.Incomes.FindAsync(id);
-            _context.Incomes.Remove(income);
-            await _context.SaveChangesAsync();
+            await _repository.Delete(id);
             return RedirectToAction(nameof(Index));
         }
 
-        private bool IncomeExists(int id)
-        {
-            return _context.Incomes.Any(e => e.Id == id);
-        }
+      
     }
 }

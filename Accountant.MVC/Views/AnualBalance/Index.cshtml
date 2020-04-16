@@ -1,43 +1,62 @@
 ﻿@model IEnumerable<Accountant.MVC.Models.AnualBalance>
 
 @{
-    Layout = null;
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<!DOCTYPE html>
+<!--MUESTRA TODOS LOS AÑOS EXISTENTES-->
+<h1>Balances Anuales</h1>
+<hr />
 
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Index</title>
-</head>
-<body>
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.AnualBalanceResult)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.AnualBalanceResult)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
-</body>
-</html>
+<div>
+    <!--Crea un nuevo año-->
+    @if (Model.Count() == 0)
+    {
+        <div class="text-center align-items-center">
+            <h3>Bienvenido!</h3>
+            <p><a type="button" class="btn btn-outline-dark" asp-action="Create">Comenzar</a></p>
+        </div>
+        
+    }
+    else
+    {
+        <p><a type="button" class="btn btn-outline-dark" asp-action="Create">Nuevo Año</a></p>
+        <br />
+        @foreach (AnualBalance item in Model)
+        {
+            <!--Info general del Año-->
+            <div class="card shadow p-3 mb-5 bg-white rounded" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title text-center">@Html.DisplayFor(modelItem => item.Year)</h5>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Balances mensuales: @Html.DisplayFor(modelItem => item.Balances.Count)</li>
+                    <li class="list-group-item">Balance: $@Html.DisplayFor(modelItem => item.AnualBalanceResult)</li>
+                    @if (item.Positive)
+                    {
+                        <li style="color:forestgreen;" class="list-group-item">Positivo</li>
+                    }
+                    else
+                    {
+                        <li style="color:red;" class="list-group-item">Negativo</li>
+                    }
+                </ul>
+                <div class="card-body">
+                    <!--AnualBalance/Details/{id}-->
+                    <a type="button" class="btn btn-outline-primary btn-sm" asp-action="Details" asp-route-id="@item.Id">Administrar</a>
+
+                    <!--AnualBalance/Delete/{id}-->
+                    @if (item.Balances.Count == 0)
+                    {
+                        <div>|</div>
+                        <a type="button" class="btn btn-outline-danger btn-sm" asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
+                    }
+                </div>
+            </div>
+        }
+    }
+
+</div>
+
+

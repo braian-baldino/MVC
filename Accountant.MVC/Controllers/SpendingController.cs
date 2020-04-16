@@ -7,22 +7,24 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Accountant.MVC.Context;
 using Accountant.MVC.Models;
+using Accountant.MVC.Dtos;
+using Accountant.MVC.Interfaces;
 
 namespace Accountant.MVC.Controllers
 {
     public class SpendingController : Controller
     {
-        private readonly AccountantContext _context;
+        private readonly ISpendingRepository _repository;
 
-        public SpendingController(AccountantContext context)
+        public SpendingController(ISpendingRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         // GET: Spending
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Spendings.ToListAsync());
+            return View(await _repository.GetAll());
         }
 
         // GET: Spending/Details/5
@@ -33,8 +35,8 @@ namespace Accountant.MVC.Controllers
                 return NotFound();
             }
 
-            var spending = await _context.Spendings
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var spending = await _repository.Get((int)id);
+
             if (spending == null)
             {
                 return NotFound();
@@ -44,9 +46,30 @@ namespace Accountant.MVC.Controllers
         }
 
         // GET: Spending/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create(int? id)
         {
-            return View();
+            try
+            {
+                if(id == null)
+                {
+                    SpendingDto spendingDto = new SpendingDto();
+                    spendingDto.AnualBalances = await _repository.GetAnualBalances();
+                    spendingDto.Categories = await _repository.GetSpendingTypes();
+                    return View("Create",spendingDto);
+                }
+                else
+                {
+                    SpendingDto spendingDto = new SpendingDto();
+                    spendingDto.Balance = await _repository.GetBalance((int)id);
+                    spendingDto.Categories = await _repository.GetSpendingTypes();
+                    return View("CreateFromBalance",spendingDto);
+                }
+                
+            }
+            catch (Exception)
+            {
+                throw new Exception();
+            }
         }
 
         // POST: Spending/Create
@@ -54,15 +77,23 @@ namespace Accountant.MVC.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,BalanceId,Category,Description,Amount,Date")] Spending spending)
+        public async Task<IActionResult> Create(SpendingDto spendingDto)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(spending);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    Spending spending = new Spending();
+                    spending = spendingDto.Spending;
+                    if(await _repository.Add(spending) != null)
+                        return RedirectToAction(nameof(Details), "Balance", new { id = spending.BalanceId }, null);
+                }
+                catch (Exception)
+                {
+                    throw new Exception("No se pudo cargar el gasto.");
+                }               
             }
-            return View(spending);
+            return View(spendingDto);
         }
 
         // GET: Spending/Edit/5
@@ -73,7 +104,8 @@ namespace Accountant.MVC.Controllers
                 return NotFound();
             }
 
-            var spending = await _context.Spendings.FindAsync(id);
+            var spending = await _repository.Get((int)id);
+
             if (spending == null)
             {
                 return NotFound();
@@ -97,12 +129,12 @@ namespace Accountant.MVC.Controllers
             {
                 try
                 {
-                    _context.Update(spending);
-                    await _context.SaveChangesAsync();
+                    if (await _repository.Update(spending) != null)
+                        return RedirectToAction(nameof(Details), "Balance", new { id = spending.BalanceId }, null);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!SpendingExists(spending.Id))
+                    if (!_repository.SpendingExists(spending.Id))
                     {
                         return NotFound();
                     }
@@ -124,8 +156,8 @@ namespace Accountant.MVC.Controllers
                 return NotFound();
             }
 
-            var spending = await _context.Spendings
-                .FirstOrDefaultAsync(m => m.Id == id);
+            Spending spending = await _repository.Get((int)id);
+
             if (spending == null)
             {
                 return NotFound();
@@ -139,15 +171,10 @@ namespace Accountant.MVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var spending = await _context.Spendings.FindAsync(id);
-            _context.Spendings.Remove(spending);
-            await _context.SaveChangesAsync();
+            Spending spending = await _repository.Delete(id);
             return RedirectToAction(nameof(Index));
         }
 
-        private bool SpendingExists(int id)
-        {
-            return _context.Spendings.Any(e => e.Id == id);
-        }
+      
     }
 }

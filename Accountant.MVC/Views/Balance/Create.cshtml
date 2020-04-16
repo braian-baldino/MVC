@@ -1,7 +1,8 @@
-﻿@model Accountant.MVC.Models.Balance
+﻿@model Accountant.MVC.Dtos.BalanceDto
 
 @{
-    Layout = null;
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <!DOCTYPE html>
@@ -9,43 +10,56 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>Create</title>
+    <title>Agregar Balance Mensual</title>
 </head>
 <body>
 
-<h4>Balance</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="AnualBalanceId" class="control-label"></label>
-                <select asp-for="AnualBalanceId" class ="form-control" asp-items="ViewBag.AnualBalanceId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="Month" class="control-label"></label>
-                <input asp-for="Month" class="form-control" />
-                <span asp-validation-for="Month" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="BalanceResult" class="control-label"></label>
-                <input asp-for="BalanceResult" class="form-control" />
-                <span asp-validation-for="BalanceResult" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+    <h4>Balance</h4>
+    <hr />
+    <div class="row">
+        <div class="col-md-4">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="Month.AnualBalanceId" class="control-label">Año</label>
+                    <select asp-for="Month.AnualBalanceId" class="form-control">
+                        @foreach (AnualBalance item in @Model.Years)
+                        {
+                            <option value="@item.Id">@item.Year</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Month.Month" class="control-label">Mes</label>
+                    <select asp-for="Month.Month" class="form-control">
+                        <option>Enero</option>
+                        <option>Febrero</option>
+                        <option>Marzo</option>
+                        <option>Abril</option>
+                        <option>Mayo</option>
+                        <option>Junio</option>
+                        <option>Julio</option>
+                        <option>Agosto</option>
+                        <option>Septiembre</option>
+                        <option>Octubre</option>
+                        <option>Noviembre</option>
+                        <option>Diciembre</option>
+                    </select>
+                    <span asp-validation-for="Month.Month" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Create" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+    <div>
+        <a type="button" class="btn btn-outline-primary" asp-controller="AnualBalance" asp-action="Index">Volver</a>
+    </div>
 
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+    @section Scripts {
+        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    }
 </body>
 </html>

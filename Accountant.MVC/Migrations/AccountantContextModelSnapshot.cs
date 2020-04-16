@@ -26,8 +26,14 @@ namespace Accountant.MVC.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<double>("AnualBalanceResult")
+                    b.Property<double?>("AnualBalanceResult")
                         .HasColumnType("float");
+
+                    b.Property<bool>("Positive")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -44,17 +50,56 @@ namespace Accountant.MVC.Migrations
                     b.Property<int>("AnualBalanceId")
                         .HasColumnType("int");
 
-                    b.Property<double>("BalanceResult")
+                    b.Property<double?>("BalanceResult")
                         .HasColumnType("float");
 
                     b.Property<string>("Month")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Positive")
+                        .HasColumnType("bit");
+
+                    b.Property<double?>("TotalIncomes")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("TotalSpendings")
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AnualBalanceId");
 
                     b.ToTable("Balances");
+                });
+
+            modelBuilder.Entity("Accountant.MVC.Models.DropDowns.EIncomeType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("CategoryName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("IncomeTypes");
+                });
+
+            modelBuilder.Entity("Accountant.MVC.Models.DropDowns.ESpendingType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("CategoryName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SpendingTypes");
                 });
 
             modelBuilder.Entity("Accountant.MVC.Models.Income", b =>
@@ -77,7 +122,8 @@ namespace Accountant.MVC.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(40)")
+                        .HasMaxLength(40);
 
                     b.HasKey("Id");
 
@@ -106,7 +152,8 @@ namespace Accountant.MVC.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(40)")
+                        .HasMaxLength(40);
 
                     b.HasKey("Id");
 

@@ -1,33 +1,47 @@
 ﻿@model Accountant.MVC.Models.AnualBalance
 
 @{
-    Layout = null;
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<!DOCTYPE html>
+<!--MUESTRA LA LISTA DE BALANCES DEL AÑO SELECCIONADO-->
+<h1>@Model.Year</h1>
+<br />
 
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Details</title>
-</head>
-<body>
+<!--Crear un Nuevo Mes(BALANCE)-->
+<a type="button" class="btn btn-outline-dark" asp-controller="Balance" asp-action="Create" asp-route-id="@Model.Id">Añadir Mes</a>
 
+@foreach (Balance item in Model.Balances)
+{
+    <!--Info general del Mes(BALANCE)-->
+    <div class="card shadow p-3 mb-5 bg-white rounded" style="width: 18rem;">
+        <div class="card-body">
+            <h5 class="card-title text-center">@Html.DisplayFor(modelItem => item.Month)</h5>
+        </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">Ingresos Totales: $@Html.DisplayFor(modelItem => item.TotalIncomes)</li>
+            <li class="list-group-item">Egresos Totales: $@Html.DisplayFor(modelItem => item.TotalSpendings)</li>
+            <li class="list-group-item">Balance: $@Html.DisplayFor(modelItem => item.BalanceResult)</li>
+            @if (item.Positive)
+            {
+                <li style="color:forestgreen;" class="list-group-item">Positivo</li>
+            }
+            else
+            {
+                <li style="color:red;" class="list-group-item">Negativo</li>
+            }
+        </ul>
+        <div class="card-body">
+            <!--Pagina de gestion del Mes(BALANCE) seleccionado-->
+            <a type="button" class="btn-outline-primary btn-sm" asp-controller="Balance" asp-action="Details" asp-route-id="@item.Id">Detalle</a>
+            |
+            <!--Elimina el Mes(BALANCE) seleccionado-->
+            <a type="button" class="btn-outline-danger btn-sm" asp-controller="Balance" asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
+        </div>
+    </div>
+}
 <div>
-    <h4>AnualBalance</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AnualBalanceResult)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AnualBalanceResult)
-        </dd>
-    </dl>
+    <!--Vuelve a la lista de años-->
+    <a type="btn" class="btn backArrow " asp-controller="AnualBalance" asp-action="Index"><i class="fa fa-arrow-left"></i></a>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
-</body>
-</html>

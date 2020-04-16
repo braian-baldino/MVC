@@ -7,22 +7,24 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Accountant.MVC.Context;
 using Accountant.MVC.Models;
+using Accountant.MVC.Interfaces;
 
 namespace Accountant.MVC.Controllers
 {
     public class AnualBalanceController : Controller
     {
-        private readonly AccountantContext _context;
+        private readonly IAnualBalanceRepository _repository;
 
-        public AnualBalanceController(AccountantContext context)
+        public AnualBalanceController(IAnualBalanceRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         // GET: AnualBalance
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
-            return View(await _context.AnualBalances.ToListAsync());
+            return View(await _repository.GetAll());
         }
 
         // GET: AnualBalance/Details/5
@@ -33,8 +35,8 @@ namespace Accountant.MVC.Controllers
                 return NotFound();
             }
 
-            var anualBalance = await _context.AnualBalances
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var anualBalance = await _repository.Get((int)id);
+
             if (anualBalance == null)
             {
                 return NotFound();
@@ -54,12 +56,11 @@ namespace Accountant.MVC.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,AnualBalanceResult")] AnualBalance anualBalance)
+        public async Task<IActionResult> Create([Bind("Id,Year,AnualBalanceResult")] AnualBalance anualBalance)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(anualBalance);
-                await _context.SaveChangesAsync();
+                await _repository.Add(anualBalance);
                 return RedirectToAction(nameof(Index));
             }
             return View(anualBalance);
@@ -73,7 +74,8 @@ namespace Accountant.MVC.Controllers
                 return NotFound();
             }
 
-            var anualBalance = await _context.AnualBalances.FindAsync(id);
+            var anualBalance = await _repository.Get((int)id);
+
             if (anualBalance == null)
             {
                 return NotFound();
@@ -86,7 +88,7 @@ namespace Accountant.MVC.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,AnualBalanceResult")] AnualBalance anualBalance)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Year,AnualBalanceResult")] AnualBalance anualBalance)
         {
             if (id != anualBalance.Id)
             {
@@ -97,12 +99,11 @@ namespace Accountant.MVC.Controllers
             {
                 try
                 {
-                    _context.Update(anualBalance);
-                    await _context.SaveChangesAsync();
+                    await _repository.Update(anualBalance);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!AnualBalanceExists(anualBalance.Id))
+                    if (!_repository.AnualBalanceExists(anualBalance.Id))
                     {
                         return NotFound();
                     }
@@ -124,8 +125,8 @@ namespace Accountant.MVC.Controllers
                 return NotFound();
             }
 
-            var anualBalance = await _context.AnualBalances
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var anualBalance = await _repository.Get((int)id);
+
             if (anualBalance == null)
             {
                 return NotFound();
@@ -139,15 +140,20 @@ namespace Accountant.MVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var anualBalance = await _context.AnualBalances.FindAsync(id);
-            _context.AnualBalances.Remove(anualBalance);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                if (await _repository.Delete(id) != null)
+                    return RedirectToAction(nameof(Index));
+                else
+                    throw new Exception();
+            }
+            catch (Exception)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+           
+                
         }
 
-        private bool AnualBalanceExists(int id)
-        {
-            return _context.AnualBalances.Any(e => e.Id == id);
-        }
     }
 }

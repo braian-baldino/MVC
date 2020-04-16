@@ -1,7 +1,8 @@
 ﻿@model Accountant.MVC.Models.Balance
 
 @{
-    Layout = null;
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <!DOCTYPE html>
@@ -9,31 +10,76 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>Details</title>
+    <title>Detalles | @Model.Month</title>
 </head>
 <body>
 
-<div>
-    <h4>Balance</h4>
+    <h4>Ingresos: $@Model.TotalIncomes</h4>
     <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Month)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Month)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.BalanceResult)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.BalanceResult)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+    <a type="button" class="btn btn-lg addIncome" asp-controller="Income" asp-action="Create" asp-route-id="@Model.Id"><i class="fa fa-plus-circle"></i></a>
+
+    <table class="table shadow-lg p-3 mb-5 bg-white rounded">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">Descripcion</th>
+                <th scope="col">Monto</th>
+                <th scope="col">Fecha</th>
+                <th scope="col">Categoria</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Income item in Model.Incomes)
+            {
+                <tr>
+                    <th scope="row">@Html.DisplayFor(modelItem => item.Description)</th>
+                    <td>$@Html.DisplayFor(modelItem => item.Amount)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Date)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Category)</td>
+                    <td>
+                        <a type="button" class="btn editItem" asp-controller="Income" asp-action="Edit" asp-route-id="@item.Id"><i class="fa fa-edit"></i></a>
+                        
+                        <a type="button" class="btn deleteItem" asp-controller="Income" asp-action="Delete" asp-route-id="@item.Id"><i class="fa fa-minus"></i></a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <br />
+
+    <h4>Gastos: $@Model.TotalSpendings</h4>
+    <hr />
+    <a type="button" class="btn btn-lg addSpending" asp-controller="Spending" asp-action="Create" asp-route-id="@Model.Id"><i class="fa fa-plus-circle"></i></a>
+    <table class="table shadow-lg p-3 mb-5 bg-white rounded">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">Descripcion</th>
+                <th scope="col">Monto</th>
+                <th scope="col">Fecha</th>
+                <th scope="col">Categoria</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Spending item in Model.Spendings)
+            {
+            <tr>
+                <th scope="row">@Html.DisplayFor(modelItem => item.Description)</th>
+                <td>$@Html.DisplayFor(modelItem => item.Amount)</td>
+                <td>@Html.DisplayFor(modelItem => item.Date)</td>
+                <td>@Html.DisplayFor(modelItem => item.Category)</td>
+                <td>
+                    <a type="button" class="btn editItem" asp-controller="Spending" asp-action="Edit" asp-route-id="@item.Id"><i class="fa fa-edit"></i></a>
+
+                    <a type="button" class="btn deleteItem" asp-controller="Spending" asp-action="Delete" asp-route-id="@item.Id"><i class="fa fa-minus"></i></a>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+    <div>
+        <a type="btn" class="btn backArrow " asp-controller="AnualBalance" asp-action="Details" asp-route-id="@Model.AnualBalanceId"><i class="fa fa-arrow-left"></i></a>
+    </div>
 </body>
 </html>

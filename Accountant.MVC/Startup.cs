@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Accountant.MVC.Context;
+using Accountant.MVC.Interfaces;
+using Accountant.MVC.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -29,6 +31,11 @@ namespace Accountant.MVC
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddControllersWithViews();
             services.AddRazorPages();
+
+            services.AddScoped<IBalanceRepository, BalanceRepository>();
+            services.AddScoped<IIncomeRepository, IncomeRepository>();
+            services.AddScoped<ISpendingRepository, SpendingRepository>();
+            services.AddScoped<IAnualBalanceRepository, AnualBalanceRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,7 +1,8 @@
 ﻿@model IEnumerable<Accountant.MVC.Models.Balance>
 
 @{
-    Layout = null;
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <!DOCTYPE html>
@@ -9,41 +10,33 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>Index</title>
+    <title>Title</title>
 </head>
 <body>
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Month)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.BalanceResult)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Month)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.BalanceResult)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <p>
+        <a asp-controller="Balance" asp-action="Create">Nuevo Mes</a>
+    </p>
+    @foreach (Balance item in Model)
+    {
+        <div class="card shadow p-3 mb-5 bg-white rounded" style="width: 18rem;">
+            <div class="card-body">
+                <h5 class="card-title text-center">@Html.DisplayFor(modelItem => item.Month)</h5>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">Ingresos Totales: @Html.DisplayFor(modelItem => item.TotalIncomes)</li>
+                <li class="list-group-item">Egresos Totales: @Html.DisplayFor(modelItem => item.TotalSpendings)</li>
+                <li class="list-group-item">Positivo: @Html.DisplayFor(modelItem => item.Positive)</li>
+            </ul>
+            <div class="card-body">
+                <a asp-controller="Balance" asp-action="Details" asp-route-id="@item.Id">Administrar</a>
+                |
+                <a asp-controller="Balance" asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
+            </div>
+        </div>
+
+        <div>
+            <a type="btn" class="btn backArrow " asp-controller="AnualBalance" asp-action="Index"><i class="fa fa-arrow-left"></i></a>
+        </div>
+    }
 </body>
 </html>

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Accountant.MVC.Models.DropDowns;
 
 namespace Accountant.MVC.Context
 {
@@ -17,5 +18,7 @@ namespace Accountant.MVC.Context
         public DbSet<Balance> Balances { get; set; }
         public DbSet<Spending> Spendings { get; set; }
         public DbSet<Income> Incomes { get; set; }
+        public DbSet<EIncomeType> IncomeTypes { get; set; }
+        public DbSet<ESpendingType> SpendingTypes { get; set; }
     }
 }
