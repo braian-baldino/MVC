@@ -7,40 +7,47 @@
 
 <!--MUESTRA LA LISTA DE BALANCES DEL AÑO SELECCIONADO-->
 <h1>@Model.Year</h1>
-<br />
+<hr />
 
-<!--Crear un Nuevo Mes(BALANCE)-->
-<a type="button" class="btn btn-outline-dark" asp-controller="Balance" asp-action="Create" asp-route-id="@Model.Id">Añadir Mes</a>
+<div>
+    <!--Crear un Nuevo Mes(BALANCE)-->
 
-@foreach (Balance item in Model.Balances)
-{
-    <!--Info general del Mes(BALANCE)-->
-    <div class="card shadow p-3 mb-5 bg-white rounded" style="width: 18rem;">
-        <div class="card-body">
-            <h5 class="card-title text-center">@Html.DisplayFor(modelItem => item.Month)</h5>
+    <a type="button" class="btn addIncome" asp-controller="Balance" asp-action="Create" asp-route-id="@Model.Id"><i class="fas fa-plus-circle"></i></a>
+    <br />
+    @foreach (Balance item in Model.Balances)
+    {
+        <!--Info general del Mes(BALANCE)-->
+        <div class="card shadow-lg bg-white rounded" style="width: 18rem;">
+            <div class="card-body">
+                <h5 class="card-title text-center">@Html.DisplayFor(modelItem => item.Month)</h5>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">Ingresos Totales: $@Html.DisplayFor(modelItem => item.TotalIncomes)</li>
+                <li class="list-group-item">Gastos Totales: $@Html.DisplayFor(modelItem => item.TotalSpendings)</li>
+                <li class="list-group-item">Balance: $@Html.DisplayFor(modelItem => item.BalanceResult)</li>
+                @if (item.Positive)
+                {
+                    <li class="list-group-item positive"><i class="fas fa-thumbs-up"></i></li>
+                }
+                else
+                {
+                    <li class="list-group-item negative"><i class="fas fa-thumbs-down"></i></li>
+                }
+            </ul>
+            <div class="card-body text-center">
+                <!--Pagina de gestion del Mes(BALANCE) seleccionado-->
+                <a type="button" class="btn btn-outline-primary btn-sm" asp-controller="Balance" asp-action="Details" asp-route-id="@item.Id">Administrar</a>
+                @if (item.Incomes.Count == 0 && item.Spendings.Count == 0)
+                {
+                    <!--Elimina el Mes(BALANCE) seleccionado-->
+                    <a type="button" class="btn btn-outline-danger btn-sm" asp-controller="Balance" asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
+                }
+            </div>
         </div>
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item">Ingresos Totales: $@Html.DisplayFor(modelItem => item.TotalIncomes)</li>
-            <li class="list-group-item">Egresos Totales: $@Html.DisplayFor(modelItem => item.TotalSpendings)</li>
-            <li class="list-group-item">Balance: $@Html.DisplayFor(modelItem => item.BalanceResult)</li>
-            @if (item.Positive)
-            {
-                <li style="color:forestgreen;" class="list-group-item">Positivo</li>
-            }
-            else
-            {
-                <li style="color:red;" class="list-group-item">Negativo</li>
-            }
-        </ul>
-        <div class="card-body">
-            <!--Pagina de gestion del Mes(BALANCE) seleccionado-->
-            <a type="button" class="btn-outline-primary btn-sm" asp-controller="Balance" asp-action="Details" asp-route-id="@item.Id">Detalle</a>
-            |
-            <!--Elimina el Mes(BALANCE) seleccionado-->
-            <a type="button" class="btn-outline-danger btn-sm" asp-controller="Balance" asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
-        </div>
-    </div>
-}
+    }
+</div>
+
+
 <div>
     <!--Vuelve a la lista de años-->
     <a type="btn" class="btn backArrow " asp-controller="AnualBalance" asp-action="Index"><i class="fa fa-arrow-left"></i></a>

@@ -1,4 +1,6 @@
-﻿.card {
+﻿
+
+.card {
     border-radius: 10px;
     display: inline-block;
     margin: 10px;
@@ -47,4 +49,14 @@
 
 .backArrow:hover{
     color:Highlight;
+}
+
+.positive{
+    color:seagreen;
+    font-size:20px;
+}
+
+.negative {
+    color: red;
+    font-size: 20px;
 }

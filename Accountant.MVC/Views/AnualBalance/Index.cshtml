@@ -13,9 +13,9 @@
     <!--Crea un nuevo año-->
     @if (Model.Count() == 0)
     {
-        <div class="text-center align-items-center">
+        <div class="text-center">
             <h3>Bienvenido!</h3>
-            <p><a type="button" class="btn btn-outline-dark" asp-action="Create">Comenzar</a></p>
+            <p><a type="button" class="btn shadow btn-outline-dark" asp-action="Create">Comenzar</a></p>
         </div>
         
     }
@@ -26,7 +26,7 @@
         @foreach (AnualBalance item in Model)
         {
             <!--Info general del Año-->
-            <div class="card shadow p-3 mb-5 bg-white rounded" style="width: 18rem;">
+            <div class="card shadow-lg p-3 mb-5 bg-white rounded" style="width: 18rem;">
                 <div class="card-body">
                     <h5 class="card-title text-center">@Html.DisplayFor(modelItem => item.Year)</h5>
                 </div>
@@ -35,23 +35,24 @@
                     <li class="list-group-item">Balance: $@Html.DisplayFor(modelItem => item.AnualBalanceResult)</li>
                     @if (item.Positive)
                     {
-                        <li style="color:forestgreen;" class="list-group-item">Positivo</li>
+                        <li class="list-group-item positive"><i class="fas fa-thumbs-up"></i></li>
                     }
                     else
                     {
-                        <li style="color:red;" class="list-group-item">Negativo</li>
+                        <li class="list-group-item negative"><i class="fas fa-thumbs-down"></i></li>
                     }
                 </ul>
                 <div class="card-body">
-                    <!--AnualBalance/Details/{id}-->
-                    <a type="button" class="btn btn-outline-primary btn-sm" asp-action="Details" asp-route-id="@item.Id">Administrar</a>
+                    <div class="text-center">
+                        <!--AnualBalance/Details/{id}-->
+                        <a type="button" class="btn btn-outline-primary btn-sm" asp-action="Details" asp-route-id="@item.Id">Administrar</a>
 
-                    <!--AnualBalance/Delete/{id}-->
-                    @if (item.Balances.Count == 0)
-                    {
-                        <div>|</div>
-                        <a type="button" class="btn btn-outline-danger btn-sm" asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
-                    }
+                        <!--AnualBalance/Delete/{id}-->
+                        @if (item.Balances.Count == 0)
+                        {
+                            <a type="button" class="btn deleteItem" asp-action="Delete" asp-route-id="@item.Id"><i class="fa fa-minus"></i></a>
+                        }
+                    </div>           
                 </div>
             </div>
         }

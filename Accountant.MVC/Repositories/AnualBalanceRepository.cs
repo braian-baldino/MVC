@@ -26,6 +26,8 @@ namespace Accountant.MVC.Repositories
             {
                 if (entity != null)
                 {
+                    entity.AnualBalanceResult = 0;
+
                     _context.Add(entity);
                     await _context.SaveChangesAsync();
 
@@ -97,6 +99,10 @@ namespace Accountant.MVC.Repositories
             try
             {
                 return await _context.AnualBalances
+                    .Include(b => b.Balances)
+                    .ThenInclude(s => s.Spendings)
+                    .Include(b => b.Balances)
+                    .ThenInclude(i => i.Incomes)
                     .Include(b => b.Balances)
                     .Where(a => a.Id == id)
                     .FirstOrDefaultAsync();
