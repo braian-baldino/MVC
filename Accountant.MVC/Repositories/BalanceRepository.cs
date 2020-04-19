@@ -119,28 +119,62 @@ namespace Accountant.MVC.Repositories
             }
         }
 
-        public async Task<Balance> Add(Balance balance)
+        public async Task<EMonth> GetMonth(int monthId)
         {
             try
             {
-                if(balance != null)
-                {
-                    List<EMonth> months = await GetMonthList();
+                return await _context.Months.Where(m => m.Id == monthId).FirstOrDefaultAsync();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
 
-                    foreach (EMonth month in months)
+        public async Task<bool> UniqueMonthValidation(Balance newBalance)
+        {
+            try
+            {
+                AnualBalance anualBalance = await _context.AnualBalances
+                    .Include(b => b.Balances)
+                    .ThenInclude(m => m.Month)
+                    .Where(a => a.Id == newBalance.AnualBalanceId)
+                    .FirstOrDefaultAsync();
+
+                if(anualBalance != null)
+                {
+                    foreach (Balance _bal in anualBalance.Balances)
                     {
-                        if (balance.MonthId == month.Id)
-                            balance.Month = month;
+                        if (_bal.Month.Id == newBalance.MonthId)
+                            return false;
                     }
 
-                    balance.TotalIncomes = 0;
-                    balance.TotalSpendings = 0;
-                    balance.BalanceResult = 0;
+                    return true;
+                }
 
-                    _context.Add(balance);
+                return false;
+            }
+            catch (Exception)
+            {
+                throw new Exception("Internal Error UniqueMonthValidation");
+            }
+        }
+
+        public async Task<Balance> Add(Balance newBalance)
+        {
+            try
+            {
+                if(newBalance != null)
+                {
+                    newBalance.Month = await GetMonth(newBalance.MonthId);                 
+                    newBalance.TotalIncomes = 0;
+                    newBalance.TotalSpendings = 0;
+                    newBalance.BalanceResult = 0;
+
+                    _context.Add(newBalance);
                     await _context.SaveChangesAsync();
 
-                    return balance;
+                    return newBalance;
                 }
 
                 return null;

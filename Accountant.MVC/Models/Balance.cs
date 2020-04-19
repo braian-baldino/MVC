@@ -14,7 +14,7 @@ namespace Accountant.MVC.Models
         public int AnualBalanceId { get; set; }
         public List<Income> Incomes { get; set; } = new List<Income>();
         public List<Spending> Spendings { get; set; } = new List<Spending>();
-        public int? MonthId { get; set; }
+        public int MonthId { get; set; }
         public EMonth Month { get; set; }
         public double? TotalIncomes { get; set; }
         public double? TotalSpendings { get; set; }

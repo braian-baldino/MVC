@@ -76,12 +76,17 @@ namespace Accountant.MVC.Controllers
             {                         
                 try
                 {
+                    if(!await _repository.UniqueMonthValidation(balanceDto.Balance))
+                    {
+                        return BadRequest();
+                    }
+
                     Balance newBalance = await _repository.Add(balanceDto.Balance);
 
                     if (newBalance == null)
                         throw new Exception();
 
-                    return RedirectToAction(nameof(Details), "Balance", new { id = newBalance.Id }, null);                
+                    return RedirectToAction(nameof(Details), "Balance", new { id = newBalance.Id }, null);
                 }
                 catch (Exception)
                 {
