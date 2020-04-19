@@ -79,7 +79,9 @@ namespace Accountant.MVC.Repositories
         {
             try
             {
-                return await _context.Spendings.ToListAsync();
+                return await _context.Spendings
+                    .OrderBy(o => o.Date)
+                    .ToListAsync();
             }
             catch (Exception)
             {
@@ -151,7 +153,9 @@ namespace Accountant.MVC.Repositories
             {
                 if (_balanceRepo.BalanceExists(balanceId))
                 {
-                    return await _context.Spendings.Where(i => i.BalanceId == balanceId).ToListAsync();
+                    return await _context.Spendings
+                        .OrderBy(o => o.Date)
+                        .Where(i => i.BalanceId == balanceId).ToListAsync();
                 }
 
                 return null;
@@ -166,7 +170,9 @@ namespace Accountant.MVC.Repositories
         {
             try
             {
-                return await _context.SpendingTypes.ToListAsync();
+                return await _context.SpendingTypes
+                    .OrderBy(o => o.CategoryName)
+                    .ToListAsync();
             }
             catch (Exception)
             {

@@ -27,11 +27,12 @@ namespace Accountant.MVC.Repositories
                .Include(i => i.Incomes)
                .Include(s => s.Spendings)
                .Include(m => m.Month)
+               .OrderBy(o => o.Month.Id)
                .ToListAsync();
             }
             catch (Exception)
             {
-                throw new Exception();
+                return null;
             }
         }
 
@@ -43,12 +44,13 @@ namespace Accountant.MVC.Repositories
                 .Include(i => i.Incomes)
                 .Include(s => s.Spendings)
                 .Include(m => m.Month)
+                .OrderBy(o => o.Month.Id)
                 .Where(a => a.AnualBalanceId == anualBalanceId)
                 .ToListAsync();
             }
             catch (Exception)
             {
-                throw new Exception();
+                return null;
             }
         }
 
@@ -82,6 +84,7 @@ namespace Accountant.MVC.Repositories
                 return await _context.AnualBalances
                 .Include(b => b.Balances)
                 .ThenInclude(m => m.Month)
+                .OrderBy(o => o.Year)
                 .ToListAsync();
             }
             catch (Exception)
@@ -94,7 +97,9 @@ namespace Accountant.MVC.Repositories
         {
             try
             {
-                return await _context.Months.ToListAsync();
+                return await _context.Months
+                    .OrderBy(o => o.Id)
+                    .ToListAsync();
             }
             catch (Exception)
             {

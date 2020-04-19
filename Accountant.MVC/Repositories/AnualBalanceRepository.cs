@@ -99,12 +99,6 @@ namespace Accountant.MVC.Repositories
             try
             {
                 return await _context.AnualBalances
-                    .Include(b => b.Balances)
-                    .ThenInclude(s => s.Spendings)
-                    .Include(b => b.Balances)
-                    .ThenInclude(i => i.Incomes)
-                    .Include(b => b.Balances)
-                    .ThenInclude( m => m.Month)
                     .Where(a => a.Id == id)
                     .FirstOrDefaultAsync();
             }
@@ -121,6 +115,7 @@ namespace Accountant.MVC.Repositories
                 return await _context.AnualBalances
                     .Include(b => b.Balances)
                     .ThenInclude(m => m.Month)
+                    .OrderBy(o => o.Year)
                     .ToListAsync();
             }
             catch (Exception)

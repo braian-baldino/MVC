@@ -36,11 +36,13 @@ namespace Accountant.MVC.Controllers
             }
 
             var anualBalance = await _repository.Get((int)id);
-
+            
             if (anualBalance == null)
             {
                 return NotFound();
             }
+
+            anualBalance.Balances = await _repository.GetBalancesFromYear(anualBalance.Id);
 
             return View(anualBalance);
         }

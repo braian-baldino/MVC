@@ -67,7 +67,9 @@ namespace Accountant.MVC.Repositories
         {
             try
             {
-                return await _context.Incomes.Where(i => i.Id == id).FirstOrDefaultAsync();
+                return await _context.Incomes
+                    .OrderBy(o => o.Date)
+                    .Where(i => i.Id == id).FirstOrDefaultAsync();
             }
             catch (Exception)
             {
@@ -79,7 +81,9 @@ namespace Accountant.MVC.Repositories
         {
             try
             {
-                return await _context.Incomes.ToListAsync();
+                return await _context.Incomes
+                    .OrderBy(o => o.Date)
+                    .ToListAsync();
             }
             catch (Exception)
             {
@@ -129,7 +133,9 @@ namespace Accountant.MVC.Repositories
             {
                 if(_balanceRepo.BalanceExists(balanceId))
                 {
-                    return await _context.Incomes.Where(i => i.BalanceId == balanceId).ToListAsync();
+                    return await _context.Incomes
+                        .OrderBy(o => o.Date)
+                        .Where(i => i.BalanceId == balanceId).ToListAsync();
                 }
 
                 return null;
@@ -144,7 +150,9 @@ namespace Accountant.MVC.Repositories
         {
             try
             {
-                return await _context.IncomeTypes.ToListAsync();
+                return await _context.IncomeTypes
+                    .OrderBy(o => o.CategoryName)
+                    .ToListAsync();
             }
             catch (Exception)
             {
