@@ -4,14 +4,16 @@ using Accountant.MVC.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Accountant.MVC.Migrations
 {
     [DbContext(typeof(AccountantContext))]
-    partial class AccountantContextModelSnapshot : ModelSnapshot
+    [Migration("20200419000356_AddedMonthProperty")]
+    partial class AddedMonthProperty
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

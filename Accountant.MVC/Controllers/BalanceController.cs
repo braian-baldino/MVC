@@ -54,6 +54,7 @@ namespace Accountant.MVC.Controllers
                 BalanceDto balanceDto = new BalanceDto();
 
                 balanceDto.Years = await _repository.GetAnualBalances();
+                balanceDto.MonthList = await _repository.GetMonthList();
 
                 return View(balanceDto);
             }
@@ -69,13 +70,13 @@ namespace Accountant.MVC.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,AnualBalanceId,Month,BalanceResult")] BalanceDto balanceDto)
+        public async Task<IActionResult> Create(BalanceDto balanceDto)
         {
             if (ModelState.IsValid)
             {                         
                 try
                 {
-                    Balance newBalance = await _repository.Add(balanceDto.Month);
+                    Balance newBalance = await _repository.Add(balanceDto.Balance);
 
                     if (newBalance == null)
                         throw new Exception();

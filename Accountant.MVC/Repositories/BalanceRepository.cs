@@ -1,6 +1,7 @@
 ﻿using Accountant.MVC.Context;
 using Accountant.MVC.Interfaces;
 using Accountant.MVC.Models;
+using Accountant.MVC.Models.DropDowns;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -25,6 +26,7 @@ namespace Accountant.MVC.Repositories
                 return await _context.Balances
                .Include(i => i.Incomes)
                .Include(s => s.Spendings)
+               .Include(m => m.Month)
                .ToListAsync();
             }
             catch (Exception)
@@ -40,6 +42,7 @@ namespace Accountant.MVC.Repositories
                 return await _context.Balances
                 .Include(i => i.Incomes)
                 .Include(s => s.Spendings)
+                .Include(m => m.Month)
                 .Where(a => a.AnualBalanceId == anualBalanceId)
                 .ToListAsync();
             }
@@ -78,7 +81,20 @@ namespace Accountant.MVC.Repositories
             {
                 return await _context.AnualBalances
                 .Include(b => b.Balances)
+                .ThenInclude(m => m.Month)
                 .ToListAsync();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        public async Task<List<EMonth>> GetMonthList()
+        {
+            try
+            {
+                return await _context.Months.ToListAsync();
             }
             catch (Exception)
             {
@@ -93,6 +109,7 @@ namespace Accountant.MVC.Repositories
                 return await _context.Balances
                .Include(i => i.Incomes)
                .Include(s => s.Spendings)
+               .Include(m => m.Month)
                .Where(b => b.Id == balanceId)
                .FirstOrDefaultAsync();
             }
@@ -108,6 +125,14 @@ namespace Accountant.MVC.Repositories
             {
                 if(balance != null)
                 {
+                    List<EMonth> months = await GetMonthList();
+
+                    foreach (EMonth month in months)
+                    {
+                        if (balance.MonthId == month.Id)
+                            balance.Month = month;
+                    }
+
                     balance.TotalIncomes = 0;
                     balance.TotalSpendings = 0;
                     balance.BalanceResult = 0;

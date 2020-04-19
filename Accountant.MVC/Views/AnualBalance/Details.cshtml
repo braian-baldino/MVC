@@ -19,7 +19,7 @@
         <!--Info general del Mes(BALANCE)-->
         <div class="card shadow-lg bg-white rounded" style="width: 18rem;">
             <div class="card-body">
-                <h5 class="card-title text-center">@Html.DisplayFor(modelItem => item.Month)</h5>
+                <h5 class="card-title text-center">@Html.DisplayFor(modelItem => item.Month.Name)</h5>
             </div>
             <ul class="list-group list-group-flush">
                 <li class="list-group-item">Ingresos Totales: $@Html.DisplayFor(modelItem => item.TotalIncomes)</li>

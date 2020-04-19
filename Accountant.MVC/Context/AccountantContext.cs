@@ -20,5 +20,6 @@ namespace Accountant.MVC.Context
         public DbSet<Income> Incomes { get; set; }
         public DbSet<EIncomeType> IncomeTypes { get; set; }
         public DbSet<ESpendingType> SpendingTypes { get; set; }
+        public DbSet<EMonth> Months { get; set; }
     }
 }

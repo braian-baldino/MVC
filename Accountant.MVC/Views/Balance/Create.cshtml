@@ -1,4 +1,5 @@
-﻿@model Accountant.MVC.Dtos.BalanceDto
+﻿@using Accountant.MVC.Models.DropDowns
+@model Accountant.MVC.Dtos.BalanceDto
 
 @{
     ViewData["Title"] = "Create";
@@ -21,8 +22,8 @@
             <form asp-action="Create">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="form-group">
-                    <label asp-for="Month.AnualBalanceId" class="control-label">Año</label>
-                    <select asp-for="Month.AnualBalanceId" class="form-control">
+                    <label asp-for="Balance.AnualBalanceId" class="control-label">Año</label>
+                    <select asp-for="Balance.AnualBalanceId" class="form-control">
                         @foreach (AnualBalance item in @Model.Years)
                         {
                             <option value="@item.Id">@item.Year</option>
@@ -30,22 +31,14 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label asp-for="Month.Month" class="control-label">Mes</label>
-                    <select asp-for="Month.Month" class="form-control">
-                        <option>Enero</option>
-                        <option>Febrero</option>
-                        <option>Marzo</option>
-                        <option>Abril</option>
-                        <option>Mayo</option>
-                        <option>Junio</option>
-                        <option>Julio</option>
-                        <option>Agosto</option>
-                        <option>Septiembre</option>
-                        <option>Octubre</option>
-                        <option>Noviembre</option>
-                        <option>Diciembre</option>
+                    <label asp-for="Balance.MonthId" class="control-label">Mes</label>
+                    <select asp-for="Balance.MonthId" class="form-control">
+                        @foreach (EMonth item in Model.MonthList)
+                        {
+                            <option value="@item.Id">@item.Name</option>
+                        }
                     </select>
-                    <span asp-validation-for="Month.Month" class="text-danger"></span>
+                    <span asp-validation-for="Balance.Month" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <input type="submit" value="Create" class="btn btn-primary" />
