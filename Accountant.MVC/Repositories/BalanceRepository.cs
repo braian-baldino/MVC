@@ -93,6 +93,18 @@ namespace Accountant.MVC.Repositories
             }
         }
 
+        public async Task<AnualBalance> GetAnualBalance(int anualBalanceId)
+        {
+            try
+            {
+                return await _context.AnualBalances.Where(a => a.Id == anualBalanceId).FirstOrDefaultAsync();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
         public async Task<List<EMonth>> GetMonthList()
         {
             try

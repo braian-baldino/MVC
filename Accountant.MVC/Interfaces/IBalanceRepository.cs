@@ -19,6 +19,7 @@ namespace Accountant.MVC.Interfaces
         public Task<List<Balance>> GetBalancesFromYear(int anualBalanceId);
         public Task<AnualBalance> GetParentAnualBalance(int balanceId);
         public Task<List<AnualBalance>> GetAnualBalances();
+        public Task<AnualBalance> GetAnualBalance(int anualBalanceId);
         public Task<List<EMonth>> GetMonthList();
         public Task<EMonth> GetMonth(int monthId);
 

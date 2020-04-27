@@ -1,5 +1,5 @@
 ﻿@using Accountant.MVC.Models.DropDowns
-@model Accountant.MVC.Dtos.SpendingDto
+@model Accountant.MVC.Models.Spending
 
 @{
     ViewData["Title"] = "Create";
@@ -21,41 +21,44 @@
             <form asp-controller="Spending" asp-action="Create">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="form-group">
-                    <label asp-for="Spending.BalanceId" class="control-label">Balance de:</label>
-                    <select asp-for="Spending.BalanceId" class="form-control" asp-items="ViewBag.BalanceId">
-                        @foreach (AnualBalance anual in Model.AnualBalances)
+                    <label asp-for="BalanceId" class="control-label">Balance de:</label>
+                    <select asp-for="BalanceId" class="form-control" asp-items="ViewBag.BalanceId">
+                        @foreach (AnualBalance anual in ViewBag.AnualBalances)
                         {
                             foreach (Balance balance in anual.Balances)
                             {
-                                <option value="@balance.Id">@anual.Year - @balance.Month</option>
+                                if (balance.Month != null)
+                                {
+                                    <option value="@balance.Id">@anual.Year - @balance.Month.Name</option>
+                                }
                             }
                         }
                     </select>
                 </div>
                 <div class="form-group">
-                    <label asp-for="Spending.Category" class="control-label"></label>
-                    <select asp-for="Spending.Category" class="form-control">
-                        @foreach (ESpendingType item in Model.Categories)
+                    <label asp-for="Category" class="control-label"></label>
+                    <select asp-for="Category" class="form-control">
+                        @foreach (ESpendingType item in ViewBag.Categories)
                         {
                             <option value="@item.CategoryName">@item.CategoryName</option>
                         }
                     </select>
-                    <span asp-validation-for="Spending.Category" class="text-danger"></span>
+                    <span asp-validation-for="Category" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <label asp-for="Spending.Description" class="control-label"></label>
-                    <input type="text" maxlength="40" asp-for="Spending.Description" class="form-control" required/>
-                    <span asp-validation-for="Spending.Description" class="text-danger"></span>
+                    <label asp-for="Description" class="control-label"></label>
+                    <input type="text" maxlength="40" asp-for="Description" class="form-control" required/>
+                    <span asp-validation-for="Description" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <label asp-for="Spending.Amount" class="control-label"></label>
-                    <input required min="0" asp-for="Spending.Amount" class="form-control" />
-                    <span asp-validation-for="Spending.Amount" class="text-danger"></span>
+                    <label asp-for="Amount" class="control-label"></label>
+                    <input required min="0" asp-for="Amount" class="form-control" />
+                    <span asp-validation-for="Amount" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <label asp-for="Spending.Date" class="control-label"></label>
-                    <input type="date" asp-for="Spending.Date" class="form-control" />
-                    <span asp-validation-for="Spending.Date" class="text-danger"></span>
+                    <label asp-for="Date" class="control-label"></label>
+                    <input type="date" asp-for="Date" class="form-control" />
+                    <span asp-validation-for="Date" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <input type="submit" value="Agregar" class="btn btn-outline-primary" />

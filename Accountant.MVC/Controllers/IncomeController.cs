@@ -52,17 +52,15 @@ namespace Accountant.MVC.Controllers
             {
                 if (id == null)
                 {
-                    IncomeDto incomeDto = new IncomeDto();
-                    incomeDto.AnualBalances = await _repository.GetAnualBalances();
-                    incomeDto.Categories = await _repository.GetIncomeTypes();
-                    return View("Create", incomeDto);
+                    ViewBag.AnualBalances = await _repository.GetAnualBalances();
+                    ViewBag.Categories = await _repository.GetIncomeTypes();
+                    return View("Create");
                 }
                 else
                 {
-                    IncomeDto incomeDto = new IncomeDto();
-                    incomeDto.Balance = await _repository.GetBalance((int)id);
-                    incomeDto.Categories = await _repository.GetIncomeTypes();
-                    return View("CreateFromBalance", incomeDto);
+                    ViewBag.Balance = await _repository.GetBalance((int)id);
+                    ViewBag.Categories = await _repository.GetIncomeTypes();
+                    return View("CreateFromBalance");
                 }
 
                 throw new Exception();
@@ -80,17 +78,15 @@ namespace Accountant.MVC.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(IncomeDto incomeDto)
+        public async Task<IActionResult> Create([Bind("BalanceId","Description","Amount","Date","Category")]Income income)
         {
             if (ModelState.IsValid)
             {
-                Income income = new Income();
-                income = incomeDto.Income;
-
                 if (await _repository.Add(income) != null)
-                    return RedirectToAction(nameof(Details), "Balance", new { id = incomeDto.Income.BalanceId }, null);
+                    return RedirectToAction(nameof(Details), "Balance", new { id = income.BalanceId }, null);
             }
-            return View(incomeDto);
+
+            return View(income);
         }
 
         // GET: Income/Edit/5

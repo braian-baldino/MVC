@@ -95,7 +95,11 @@ namespace Accountant.MVC.Repositories
         {
             try
             {
-                return await _context.AnualBalances.Include(b => b.Balances).ToListAsync();
+                return await _context.AnualBalances
+                    .Include(b => b.Balances)
+                    .ThenInclude(m => m.Month)
+                    .OrderByDescending(o => o.Year)
+                    .ToListAsync();
             }
             catch (Exception)
             {

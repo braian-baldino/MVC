@@ -50,7 +50,7 @@
                         <!--AnualBalance/Delete/{id}-->
                         @if (item.Balances.Count == 0)
                         {
-                            <a type="button" class="btn deleteItem" asp-action="Delete" asp-route-id="@item.Id"><i class="fa fa-minus"></i></a>
+                            <a type="button" class="btn btn-outline-danger btn-sm" asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
                         }
                     </div>           
                 </div>

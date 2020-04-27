@@ -11,6 +11,7 @@ namespace Accountant.MVC.Dtos
     {
         public List<AnualBalance> Years { get; set; } = new List<AnualBalance>();
         public List<EMonth> MonthList { get; set; } = new List<EMonth>();
+        public AnualBalance Year { get; set; }
         public Balance Balance { get; set; }
     }
 }

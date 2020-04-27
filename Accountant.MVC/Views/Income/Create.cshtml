@@ -1,5 +1,5 @@
 ﻿@using Accountant.MVC.Models.DropDowns;
-@model Accountant.MVC.Dtos.IncomeDto
+@model Accountant.MVC.Models.Income
 
 @{
     ViewData["Title"] = "Create";
@@ -21,41 +21,45 @@
             <form asp-controller="Income" asp-action="Create">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="form-group">
-                    <label asp-for="Income.BalanceId" class="control-label">Balance de:</label>
-                    <select asp-for="Income.BalanceId" class="form-control" asp-items="ViewBag.BalanceId">
-                    @foreach (AnualBalance anual in Model.AnualBalances)
-                    {
-                        foreach (Balance balance in anual.Balances)
+                    <label asp-for="BalanceId" class="control-label">Balance de:</label>
+                    <select required asp-for="BalanceId" class="form-control" asp-items="ViewBag.BalanceId">
+                        @foreach (AnualBalance anual in ViewBag.AnualBalances)
                         {
-                            <option value="@balance.Id">@anual.Year - @balance.Month</option>
+                            foreach (Balance balance in anual.Balances)
+                            {
+                                if (balance.Month != null)
+                                {
+                                    <option value="@balance.Id">@anual.Year - @balance.Month.Name</option>
+                                }
+                            }
                         }
-                    }
                     </select>
+                    <span asp-validation-for="BalanceId" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <label asp-for="Income.Category" class="control-label"></label>
-                    <select asp-for="Income.Category" class="form-control">
-                        @foreach (EIncomeType item in Model.Categories)
+                    <label asp-for="Category" class="control-label"></label>
+                    <select asp-for="Category" class="form-control">
+                        @foreach (EIncomeType item in ViewBag.Categories)
                         {
                             <option value="@item.CategoryName">@item.CategoryName</option>
                         }
                     </select>
-                    <span asp-validation-for="Income.Category" class="text-danger"></span>
+                    <span asp-validation-for="Category" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <label asp-for="Income.Description" class="control-label"></label>
-                    <input type="text" maxlength="40" asp-for="Income.Description" class="form-control" required/>
-                    <span asp-validation-for="Income.Description" class="text-danger"></span>
+                    <label asp-for="Description" class="control-label"></label>
+                    <input type="text" maxlength="40" asp-for="Description" class="form-control" required/>
+                    <span asp-validation-for="Description" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <label asp-for="Income.Amount" class="control-label"></label>
-                    <input required min="0" asp-for="Income.Amount" class="form-control" />
-                    <span asp-validation-for="Income.Amount" class="text-danger"></span>
+                    <label asp-for="Amount" class="control-label"></label>
+                    <input required min="0" asp-for="Amount" class="form-control" />
+                    <span asp-validation-for="Amount" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <label asp-for="Income.Date" class="control-label"></label>
-                    <input type="date" asp-for="Income.Date" class="form-control" />
-                    <span asp-validation-for="Income.Date" class="text-danger"></span>
+                    <label asp-for="Date" class="control-label"></label>
+                    <input type="date" asp-for="Date" class="form-control" />
+                    <span asp-validation-for="Date" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <input type="submit" value="Agregar" class="btn btn-outline-primary" />

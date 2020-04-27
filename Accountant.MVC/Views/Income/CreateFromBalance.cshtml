@@ -1,5 +1,5 @@
 ﻿@using Accountant.MVC.Models.DropDowns;
-@model Accountant.MVC.Dtos.IncomeDto
+@model Accountant.MVC.Models.Income
 
 @{
     ViewData["Title"] = "CreateFromBalance";
@@ -10,49 +10,49 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>Añadir Ingreso | @Model.Balance.Month</title>
+    <title>Añadir Ingreso | @ViewBag.Balance.Month.Name</title>
 </head>
 <body>
 
-    <h4>Añadir Ingreso a @Model.Balance.Month</h4>
+    <h4>Añadir Ingreso a @ViewBag.Balance.Month.Name</h4>
     <hr />
     <div class="row">
         <div class="col-md-4">
             <form asp-controller="Income" asp-action="Create">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="form-group">
-                    <input type="hidden" value="@Model.Balance.Id" asp-for="Income.BalanceId" class="form-control" asp-items="ViewBag.BalanceId">
+                    <input type="hidden" value="@ViewBag.Balance.Id" asp-for="BalanceId" class="form-control" asp-items="ViewBag.BalanceId">
                     
                 </div>
                 <div class="form-group">
-                    <label asp-for="Income.Category" class="control-label">Categoria</label>
-                    <select asp-for="Income.Category" class="form-control">
-                        @foreach (EIncomeType item in Model.Categories)
+                    <label asp-for="Category" class="control-label">Categoria</label>
+                    <select asp-for="Category" class="form-control">
+                        @foreach (EIncomeType item in ViewBag.Categories)
                         {
                             <option value="@item.CategoryName">@item.CategoryName</option>
                         }
                     </select>
-                    <span asp-validation-for="Income.Category" class="text-danger"></span>
+                    <span asp-validation-for="Category" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <label asp-for="Income.Description" class="control-label">Descripcion</label>
-                    <input type="text" maxlength="40" asp-for="Income.Description" class="form-control" required/>
-                    <span asp-validation-for="Income.Description" class="text-danger"></span>
+                    <label asp-for="Description" class="control-label">Descripcion</label>
+                    <input type="text" maxlength="40" asp-for="Description" class="form-control" required/>
+                    <span asp-validation-for="Description" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <label asp-for="Income.Amount" class="control-label">Monto</label>
-                    <input required min="0" asp-for="Income.Amount" class="form-control" />
-                    <span asp-validation-for="Income.Amount" class="text-danger"></span>
+                    <label asp-for="Amount" class="control-label">Monto</label>
+                    <input required min="0" asp-for="Amount" class="form-control" />
+                    <span asp-validation-for="Amount" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <label asp-for="Income.Date" class="control-label">Fecha</label>
-                    <input type="date" asp-for="Income.Date" class="form-control" />
-                    <span asp-validation-for="Income.Date" class="text-danger"></span>
+                    <label asp-for="Date" class="control-label">Fecha</label>
+                    <input type="date" asp-for="Date" class="form-control" />
+                    <span asp-validation-for="Date" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <input type="submit" value="Agregar" class="btn btn-outline-primary" />
                     |
-                    <a type="button" class="btn btn-outline-danger" asp-controller="Balance" asp-action="Details" asp-route-id="@Model.Balance.Id">Cancelar</a>
+                    <a type="button" class="btn btn-outline-danger" asp-controller="Balance" asp-action="Details" asp-route-id="@ViewBag.Balance.Id">Cancelar</a>
                 </div>
             </form>
         </div>

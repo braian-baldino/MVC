@@ -52,17 +52,15 @@ namespace Accountant.MVC.Controllers
             {
                 if(id == null)
                 {
-                    SpendingDto spendingDto = new SpendingDto();
-                    spendingDto.AnualBalances = await _repository.GetAnualBalances();
-                    spendingDto.Categories = await _repository.GetSpendingTypes();
-                    return View("Create",spendingDto);
+                    ViewBag.AnualBalances = await _repository.GetAnualBalances();
+                    ViewBag.Categories = await _repository.GetSpendingTypes();
+                    return View("Create");
                 }
                 else
                 {
-                    SpendingDto spendingDto = new SpendingDto();
-                    spendingDto.Balance = await _repository.GetBalance((int)id);
-                    spendingDto.Categories = await _repository.GetSpendingTypes();
-                    return View("CreateFromBalance",spendingDto);
+                    ViewBag.Balance = await _repository.GetBalance((int)id);
+                    ViewBag.Categories = await _repository.GetSpendingTypes();
+                    return View("CreateFromBalance");
                 }
                 
             }
@@ -77,14 +75,12 @@ namespace Accountant.MVC.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(SpendingDto spendingDto)
+        public async Task<IActionResult> Create([Bind("BalanceId","Category","Description","Amount","Date")]Spending spending)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    Spending spending = new Spending();
-                    spending = spendingDto.Spending;
                     if(await _repository.Add(spending) != null)
                         return RedirectToAction(nameof(Details), "Balance", new { id = spending.BalanceId }, null);
                 }
@@ -93,7 +89,7 @@ namespace Accountant.MVC.Controllers
                     throw new Exception("No se pudo cargar el gasto.");
                 }               
             }
-            return View(spendingDto);
+            return View(spending);
         }
 
         // GET: Spending/Edit/5

@@ -2,7 +2,7 @@
 @model Accountant.MVC.Models.Balance
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "CreateFromAnual";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -15,20 +15,14 @@
 </head>
 <body>
 
-    <h4>Balance</h4>
+    <h4>Balance @ViewBag.Year.Year</h4>
     <hr />
     <div class="row">
         <div class="col-md-4">
             <form asp-action="Create">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="form-group">
-                    <label asp-for="AnualBalanceId" class="control-label">Año</label>
-                    <select asp-for="AnualBalanceId" class="form-control">
-                        @foreach (AnualBalance item in ViewBag.Years)
-                        {
-                            <option value="@item.Id">@item.Year</option>
-                        }
-                    </select>
+                    <input type="hidden" value="@ViewBag.Year.Id" asp-for="AnualBalanceId" class="form-control">
                 </div>
                 <div class="form-group">
                     <label asp-for="MonthId" class="control-label">Mes</label>
@@ -41,8 +35,8 @@
                     <span asp-validation-for="MonthId" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <input type="submit" value="Aceptar" class="btn btn-outline-primary" />
-                    <a type="btn" class="btn btn-outline-danger" asp-controller="AnualBalance" asp-action="Index">Cancelar</a>
+                    <input type="submit" value="Create" class="btn btn-outline-primary" />
+                    <a type="btn" class="btn btn-outline-danger" asp-controller="AnualBalance" asp-action="Details" asp-route-id="@ViewBag.Year.Id">Cancelar</a>
                 </div>
             </form>
         </div>

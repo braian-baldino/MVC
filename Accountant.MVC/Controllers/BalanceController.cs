@@ -36,27 +36,41 @@ namespace Accountant.MVC.Controllers
                 return NotFound();
             }
 
-            var balance = await _repository.Get((int)id);
+            BalanceDto balanceDto = new BalanceDto();
+            balanceDto.Balance = await _repository.Get((int)id);
+            balanceDto.Year = await _repository.GetParentAnualBalance(balanceDto.Balance.Id);
 
-            if (balance == null)
+            if (balanceDto == null)
             {
                 return NotFound();
             }
 
-            return View(balance);
+            return View(balanceDto);
         }
 
         // GET: Balance/Create
-        public async Task<IActionResult> Create()
+        /// <summary>
+        /// Recive el anualBalanceId por parametro.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> Create(int? id)
         {
             try
             {
-                BalanceDto balanceDto = new BalanceDto();
 
-                balanceDto.Years = await _repository.GetAnualBalances();
-                balanceDto.MonthList = await _repository.GetMonthList();
-
-                return View(balanceDto);
+                if (id == null)
+                {
+                    ViewBag.Years = await _repository.GetAnualBalances();
+                    ViewBag.MonthList = await _repository.GetMonthList();
+                    return View("Create");
+                }
+                else
+                {
+                    ViewBag.Year = await _repository.GetAnualBalance((int)id);
+                    ViewBag.MonthList = await _repository.GetMonthList();
+                    return View("CreateFromAnual");
+                }
             }
             catch (Exception)
             {
@@ -70,18 +84,18 @@ namespace Accountant.MVC.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(BalanceDto balanceDto)
+        public async Task<IActionResult> Create([Bind("AnualBalanceId","MonthId")]Balance balance)
         {
             if (ModelState.IsValid)
             {                         
                 try
                 {
-                    if(!await _repository.UniqueMonthValidation(balanceDto.Balance))
+                    if(!await _repository.UniqueMonthValidation(balance))
                     {
                         return BadRequest();
                     }
 
-                    Balance newBalance = await _repository.Add(balanceDto.Balance);
+                    Balance newBalance = await _repository.Add(balance);
 
                     if (newBalance == null)
                         throw new Exception();
@@ -90,11 +104,11 @@ namespace Accountant.MVC.Controllers
                 }
                 catch (Exception)
                 {
-                    throw new Exception("Couldnt create Balance");
+                    return BadRequest();
                 }
                 
             }
-            return View(balanceDto);
+            return View(balance);
         }
 
         // GET: Balance/Edit/5
